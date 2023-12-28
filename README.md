@@ -1,4 +1,4 @@
-```markdown
+
 # EchoSync - Python File Sharing App
 
 EchoSync is a simple Python file-sharing application that allows users to share files quickly and easily. It provides a straightforward way to sync and share files among different users.
