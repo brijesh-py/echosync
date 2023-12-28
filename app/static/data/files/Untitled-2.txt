@@ -1,0 +1,457 @@
+Chat history
+
+
+Open sidebar
+
+ChatGPT 3.5
+
+User
+improve 
+def compare_time(date_string):
+    current_date = datetime.now()
+    specific_datetime = datetime.strptime(date_string, "%Y-%m-%d %H:%M")
+    compare_date = int(str(current_date - specific_datetime)[:1])
+    if compare_date == 0:
+        return str(specific_datetime.strftime("%H:%M"))
+    elif compare_date == 1:
+        return "Yesterday"
+    elif compare_date == 2:
+        return str(datetime.strptime(date_string[:10], "%Y-%m-%d").strftime("%A"))
+    elif compare_date == 3:
+        return str(datetime.strptime(date_string[:10], "%Y-%m-%d").strftime("%A"))
+    elif compare_date == 4:
+        return str(datetime.strptime(date_string[:10], "%Y-%m-%d").strftime("%A"))
+    elif compare_date == 5:
+        return str(datetime.strptime(date_string[:10], "%Y-%m-%d").strftime("%A"))
+    elif compare_date == 6:
+        return str(datetime.strptime(date_string[:10], "%Y-%m-%d").strftime("%A"))
+    elif compare_date == 7:
+        return str(datetime.strptime(date_string[:10], "%Y-%m-%d").strftime("%A"))
+    else:
+ChatGPT
+Here's an improved version of your compare_time function:
+
+python
+Copy code
+from datetime import datetime, timedelta
+
+def compare_time(date_string):
+    current_date = datetime.now()
+    specific_datetime = datetime.strptime(date_string, "%Y-%m-%d %H:%M")
+    time_difference = current_date - specific_datetime
+
+    if time_difference.days == 0:
+        return specific_datetime.strftime("%H:%M")
+    elif time_difference.days == 1:
+        return "Yesterday"
+    else:
+        return specific_datetime.strftime("%A")
+Improvements made:
+
+Use time_difference.days: Instead of converting the time difference to a string and extracting the first character, I used time_difference.days to directly get the difference in days.
+
+Simplify date formatting: The date formatting is done once, removing unnecessary repetitions.
+
+This version is more concise and should perform better.
+
+User
+from flask import render_template, redirect, request, json, jsonify, flash, url_for
+from app.forms import FileUploadForm, CustomFile
+from app import app
+from app.views.create_file import FileEditor
+from app.config import compare_time
+from app.models import FilesDB
+from app.views.utils import Utils
+import os
+
+
+class App:
+    @app.template_global()
+    def formate_datetime(date):
+        return compare_time(str(date))
+
+    def home_page(self):
+        file_upload_form = FileUploadForm()
+        custom_file = CustomFile()
+        files = FilesDB.query.order_by(FilesDB.upload_time.desc()).limit(20).all()
+        return render_template(
+            "index.html",
+            form=file_upload_form,
+            custom_file=custom_file,
+            files=files,
+            compare_time=compare_time,
+        )
+
+    def create_custom_file(self):
+        custom_file = CustomFile()
+        if request.method == "POST" and custom_file.validate_on_submit():
+            file_name = custom_file.custom_filename.data
+            file_content = custom_file.custom_file_content.data
+            response = FileEditor().open_file(
+                file_name=file_name, file_content=file_content
+            )
+            if response:
+                flash("Successfully created file!", ["bg__success", ""])
+            else:
+                flash("File not created?", ["bg__error", str(custom_file.errors)])
+            return redirect(url_for("app.home_page"))
+        else:
+            return redirect(url_for("app.home_page"))
+
+    def save_file(self, file):
+        file_path = os.path.join(app.config["UPLOAD_FILES"], file.filename)
+        file.save(file_path)
+        Utils().upload_file_data(file, file_path)
+
+    def upload_files_page(self):
+        file_upload_form = FileUploadForm()
+        if (
+            request.method == "POST"
+            and file_upload_form.validate_on_submit()
+            and file_upload_form.file_input.data
+        ):
+            file_data = request.files["file_input"]
+            self.save_file(file_data)
+            flash("Successfully uploaded file!", ["bg__success", ""])
+        else:
+            flash("File not uploaded?", ["bg__error", str(file_upload_form.errors)])
+        return redirect(url_for("app.home_page"))
+ChatGPT
+Your code looks generally well-structured, but there are a few improvements and suggestions:
+
+Consistency in Naming: Ensure consistency in naming conventions. For example, you have formate_datetime instead of format_datetime. Consistency helps improve code readability.
+
+Reuse of Code: The home_page method and the upload_files_page method have similar logic for handling form submission. Consider extracting the common logic into a separate method to avoid duplication.
+
+Flask Flash Messages: When flashing messages, it's a good practice to include a category along with the message. This can help in styling messages differently based on their purpose.
+
+Error Handling: It's important to handle errors gracefully. For example, in the create_custom_file method, if there is an error during file creation, it might be useful to log the error or provide more informative feedback.
+
+Here's a modified version incorporating these suggestions:
+
+python
+Copy code
+from flask import render_template, redirect, request, flash, url_for
+from app.forms import FileUploadForm, CustomFile
+from app import app
+from app.views.create_file import FileEditor
+from app.config import compare_time
+from app.models import FilesDB
+from app.views.utils import Utils
+import os
+
+class App:
+    @app.template_global()
+    def format_datetime(date):
+        return compare_time(str(date))
+
+    def handle_form_submission(self, form, success_message, error_message):
+        if request.method == "POST" and form.validate_on_submit():
+            try:
+                # Common logic for handling form submission
+                # ...
+                flash(success_message, ["bg__success", ""])
+            except Exception as e:
+                # Log the error or provide more informative feedback
+                flash(error_message, ["bg__error", str(e)])
+        else:
+            flash("Form submission failed", ["bg__error", str(form.errors)])
+        return redirect(url_for("app.home_page"))
+
+    def home_page(self):
+        file_upload_form = FileUploadForm()
+        custom_file = CustomFile()
+        files = FilesDB.query.order_by(FilesDB.upload_time.desc()).limit(20).all()
+        return render_template(
+            "index.html",
+            form=file_upload_form,
+            custom_file=custom_file,
+            files=files,
+            compare_time=compare_time,
+        )
+
+    def create_custom_file(self):
+        custom_file = CustomFile()
+        return self.handle_form_submission(
+            custom_file,
+            "Successfully created file!",
+            "File not created?",
+        )
+
+    def save_file(self, file):
+        # ...
+
+    def upload_files_page(self):
+        file_upload_form = FileUploadForm()
+        return self.handle_form_submission(
+            file_upload_form,
+            "Successfully uploaded file!",
+            "File not uploaded?",
+        )
+This modification promotes code reuse and improves the clarity of the code. Remember to adapt the error handling to your specific needs and logging setup.
+
+User
+import os
+from app.models import FilesDB
+from app.config import get_time, key
+from app import db
+
+
+class Utils:
+    def get_file_icon(self, file):
+        if "pdf" in file:
+            return "pdf.png"
+        if "image" in file:
+            return "image.png"
+        if "application" in file:
+            return "mobile-application.png"
+        if "text" in file:
+            return "file.png"
+        if "video" in file:
+            return "video.png"
+        else:
+            return "document.png"
+
+    def get_file_size(self, file):
+        megabytes = os.path.getsize(file) / 1024
+        if megabytes / 1024 >= 1:
+            return f"{str(megabytes/1024)[:5]} MB"
+        if megabytes >= 1:
+            return f"{str(megabytes)[:5]} KB"
+        if megabytes:
+            return f"{str(megabytes*1024)[:4]} Bytes"
+
+    def upload_file_data(self, file, file_path):
+        file_db = FilesDB(
+            file_name=file.filename,
+            upload_time=get_time(),
+            file_size=self.get_file_size(file_path),
+            file_type=file.content_type,
+            file_key=key(),
+            file_icon=self.get_file_icon(file.content_type),
+        )
+        db.session.add(file_db)
+        db.session.commit()
+
+ChatGPT
+Your code looks well-structured, but there are a few suggestions to enhance clarity and maintainability:
+
+Use os.path.splitext for File Extension: Instead of checking for specific substrings in the file type, you can use os.path.splitext to get the file extension more reliably.
+
+Format String for File Size: Consider using the format function or f-strings for formatting file size. It enhances readability and avoids potential issues with slicing.
+
+Round Numbers for File Size: When displaying file sizes, it's often more readable to round the numbers to a specific precision.
+
+Here's an updated version with these suggestions:
+
+python
+Copy code
+import os
+from app.models import FilesDB
+from app.config import get_time, key
+from app import db
+
+
+class Utils:
+    def get_file_icon(self, file):
+        file_extension = os.path.splitext(file)[1].lower()
+        if file_extension == ".pdf":
+            return "pdf.png"
+        if "image" in file:
+            return "image.png"
+        if "application" in file:
+            return "mobile-application.png"
+        if "text" in file:
+            return "file.png"
+        if "video" in file:
+            return "video.png"
+        else:
+            return "document.png"
+
+    def get_file_size(self, file):
+        bytes_size = os.path.getsize(file)
+        kb_size = bytes_size / 1024
+        mb_size = kb_size / 1024
+
+        if mb_size >= 1:
+            return f"{mb_size:.2f} MB"
+        if kb_size >= 1:
+            return f"{kb_size:.2f} KB"
+        return f"{bytes_size} Bytes"
+
+    def upload_file_data(self, file, file_path):
+        file_extension = os.path.splitext(file.filename)[1].lower()
+        file_icon = self.get_file_icon(file_extension)
+
+        file_db = FilesDB(
+            file_name=file.filename,
+            upload_time=get_time(),
+            file_size=self.get_file_size(file_path),
+            file_type=file.content_type,
+            file_key=key(),
+            file_icon=file_icon,
+        )
+        db.session.add(file_db)
+        db.session.commit()
+These changes should make your code more robust and readable. Adjustments were made to improve consistency and to handle file extensions more accurately. Additionally, the file size formatting now uses the f"{size:.2f}" format for better precision.
+
+User
+from app import app
+import os
+from app.views.utils import Utils
+
+class FileEditor:
+    def open_file(self, file_name, file_content):
+        file_path = os.path.join(app.config["UPLOAD_FILES"], file_name)
+        with open(file_path,'w') as file:
+            file.write(str(file_content))
+            file.close()
+            file.filename = file_name
+            file.content_type = "x/text" 
+            Utils().upload_file_data(file, file_path)
+            return True
+        return False
+        
+ChatGPT
+Your FileEditor class and open_file method look generally good. However, there are a few suggestions for improvement:
+
+Use the with statement for file handling: You are using the with statement for opening the file, which is great. However, you don't need to explicitly close the file using file.close() within the with block since the with statement takes care of that.
+
+Handle exceptions: It's a good practice to handle exceptions that might occur during file operations. For example, if there's an issue with writing to the file, it would be helpful to catch the exception and return False with an informative error message.
+
+Here's an updated version:
+
+python
+Copy code
+from app import app
+import os
+from app.views.utils import Utils
+
+class FileEditor:
+    def open_file(self, file_name, file_content):
+        file_path = os.path.join(app.config["UPLOAD_FILES"], file_name)
+        try:
+            with open(file_path, 'w') as file:
+                file.write(str(file_content))
+                file.filename = file_name
+                file.content_type = "x/text" 
+                Utils().upload_file_data(file, file_path)
+                return True
+        except Exception as e:
+            # Log the error or print it for debugging
+            print(f"Error opening file: {e}")
+            return False
+In this version, exceptions during the file operation are caught, and an informative message is printed. Adjust the error handling to suit your logging or error reporting needs.
+
+Also, make sure that the file_content you are writing to the file is a string. If it's not, you might want to convert it to a string before writing.
+
+User
+import os
+import random
+from datetime import datetime
+from slugify import slugify
+
+UPLOAD_FILES = os.path.abspath("./app/static/data/files")
+
+
+def compare_time(date_string):
+    current_date = datetime.now()
+    specific_datetime = datetime.strptime(date_string, "%Y-%m-%d %H:%M")
+    time_difference = current_date - specific_datetime
+
+    if time_difference.days == 0:
+        return specific_datetime.strftime("%H:%M")
+    elif time_difference.days == 1:
+        return "Yesterday"
+    else:
+        return specific_datetime.strftime("%A")
+
+
+def get_time():
+    return str(datetime.now().strftime("%Y-%m-%d %H:%M"))
+
+
+def key(length=10):
+    character = "ABCDEF-GHIJKLMNO-PQRSTUVWX-YZabcdef-ghijklm-nopqrstu-vwxyz12345-67890"
+    temp_key = ""
+    for x in range(length):
+        temp_key += character[random.randrange(len(character))]
+    return temp_key
+
+
+def create_slug(file_name):
+    return slugify(file_name)
+ChatGPT
+Your utility functions look good, but here are a few suggestions for improvement:
+
+Use os.path.join for file paths: When constructing file paths, use os.path.join to ensure compatibility across different operating systems.
+
+Improve key function: Instead of using a loop to generate a random key, you can use the secrets module for a more secure random key generation. Also, you can use a list comprehension to make the code more concise.
+
+Handle exceptions in compare_time and get_time: It's a good practice to handle exceptions, especially when dealing with date parsing and formatting.
+
+Here's an updated version incorporating these suggestions:
+
+python
+Copy code
+import os
+import random
+from datetime import datetime
+from slugify import slugify
+import secrets
+
+UPLOAD_FILES = os.path.abspath("./app/static/data/files")
+
+
+def compare_time(date_string):
+    try:
+        current_date = datetime.now()
+        specific_datetime = datetime.strptime(date_string, "%Y-%m-%d %H:%M")
+        time_difference = current_date - specific_datetime
+
+        if time_difference.days == 0:
+            return specific_datetime.strftime("%H:%M")
+        elif time_difference.days == 1:
+            return "Yesterday"
+        else:
+            return specific_datetime.strftime("%A")
+    except ValueError:
+        return "Invalid Date"
+
+
+def get_time():
+    try:
+        return str(datetime.now().strftime("%Y-%m-%d %H:%M"))
+    except Exception as e:
+        print(f"Error getting time: {e}")
+        return "Error"
+
+
+def key(length=10):
+    characters = "ABCDEF-GHIJKLMNO-PQRSTUVWX-YZabcdef-ghijklm-nopqrstu-vwxyz12345-67890"
+    return ''.join(secrets.choice(characters) for _ in range(length))
+
+
+def create_slug(file_name):
+    return slugify(file_name)
+In this version, I added exception handling in the compare_time and get_time functions to handle potential errors in date parsing and formatting. The key function now uses secrets for more secure random key generation.
+
+
+
+
+
+
+
+Message ChatGPT…
+
+ChatGPT can make mistakes. Consider checking important information.
+
+?
+ChatGPT
+
+
+
+
+
+
+

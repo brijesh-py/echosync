@@ -1,0 +1,86 @@
+{% extends 'base.html' %} {% set title = 'Home' %} {% block links %} {% endblock
+links %} {% block content %}
+<div class="container-fluid py-4">
+  <div class="container-md">
+    <div class="container-md mx-auto">
+      {% with messages = get_flashed_messages(with_categories=true)[0] %} {% if
+      messages %}
+      <div
+        class="text-center {{messages[0][0]}} p-2 shadow-sm border text-black fw-bold rounded mb-2 messages"
+      >
+        {{messages[1]}}
+      </div>
+      {% endif%} {% endwith %}
+      <form
+        action="{{url_for('app.upload_files_page')}}"
+        method="post"
+        enctype="multipart/form-data"
+        class="input-group p-2 rounded shadow border"
+      >
+        {{form.csrf_token()}} {{form.file_input(class='form-control border
+        rounded-start',required='true')}}
+        <button class="btn btn-black border" type="submit">
+          <img
+            src="{{url_for('static',filename='./assets/icons/upload.png')}}"
+            class="img-fluid"
+            style="width: 25px"
+            alt=""
+          />
+        </button>
+      </form>
+      {% if form.errors %}
+      <div class="alert alert-danger">
+        {% for field, errors in form.errors.items() %}
+        <p>{{ errors }}</p>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    <div class="mt-3 mb-4 mx-auto">
+      <div class="data-set">
+        {% for file in files %}
+
+        <div
+          class="d-flex justify-content-between align-items-center px-3 py-2 my-2 rounded"
+          title="{{file.file_type}}"
+        >
+          <div class="bg-light rounded p-1">
+            <img
+              src="{{url_for('static',filename='./assets/icons/'+file.file_icon)}}"
+              class="img-fluid file-icon"
+              alt=""
+            />
+          </div>
+          <div class="inner__container d-flex justify-content-between w-100">
+            <div class="left__bar d-flex align-items-center mx-3">
+              <a
+                href="{{url_for('static',filename='./data/files/'+file.file_name)}}"
+                class="text-decoration-none file_filename d-block"
+                >{{file.file_name}}</a
+              >
+            </div>
+            <div class="right__bar">
+              <small class="me-3">{{file.file_size}}</small>
+              
+              <small class="me-3">{{formate_datetime(file.upload_time)}}</small>
+            </div>
+          </div>
+          <a
+            href="{{url_for('static',filename='./data/files/'+file.file_name)}}"
+            download="{{file.file_name}}"
+            class="text-decoration-none"
+            title="Download"
+          >
+            <img
+              src="{{url_for('static',filename='./assets/icons/download.png')}}"
+              class="img-fluid download-icon"
+              alt=""
+            />
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %} {% block script %} {% endblock script %}

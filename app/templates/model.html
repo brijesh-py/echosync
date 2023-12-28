@@ -1,0 +1,23 @@
+<!-- custom file editor -->
+<div class="open__file__editor__btn shadow rounded-circle" title="Open File Editor">
+  <img src="{{url_for('static', filename='./assets/icons/plus.png')}}" alt="open model" />
+</div>
+
+<!-- model -->
+<div
+  class="file__editor__model hide container-fluid d-flex justify-content-center align-items-center"
+>
+  <div class="bg-secondary rounded shadow container-md mx-auto position-relative">
+    <div class="close__file__editor__btn shadow rounded-circle" title="Close File Editor">
+    <img src="{{url_for('static', filename='./assets/icons/close.png')}}" alt="close model" />
+    </div>
+    <div class="p-3 mx-auto">
+      <form action="{{url_for('app.create_custom_file')}}" method="post">
+        {{custom_file.csrf_token()}}
+        {{custom_file.custom_filename(class="form-control", placeholder="File name", value="Untitled-1.txt")}}
+        {{custom_file.custom_file_content(class="form-control file__editor d-block mt-2 ", placeholder="Write here content....")}}
+      <button class="btn btn-light mt-2 d-block" style="width:200px">Create</button>
+      </form>
+    </div>
+  </div>
+</div>

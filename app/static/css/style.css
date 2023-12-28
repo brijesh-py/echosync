@@ -1,0 +1,129 @@
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display&family=Rubik+Lines&display=swap");
+.navbar-logo {
+  font-family: "Playfair Display", serif;
+}
+html{
+  scroll-behavior: smooth;
+}
+body {
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  position: relative;
+  height: 100vh;
+}
+::-webkit-scrollbar {
+  display: none;
+}
+form img {
+  width: 70px;
+}
+.bg__error {
+  background-color: #f8c291;
+}
+.bg__success {
+  background-color: #b8e994;
+}
+.data-set .file-icon {
+  width: 30px;
+  filter: contrast(90%);
+}
+.data-set .download-icon {
+  width: 25px;
+}
+.data-set > div:hover {
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}
+/* model file editor */
+.open__file__editor__btn{
+  position: fixed;
+  bottom: 100px;
+  right: 60px;
+
+}
+.close__file__editor__btn{
+  position: absolute;
+  top:-60px;
+  right: 0px;
+}
+.open__file__editor__btn img, .close__file__editor__btn img{
+  width: 30px;
+  cursor: pointer;
+}
+/* model */
+.file__editor__model{
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  height: 100vh;
+  z-index: 2;
+}
+.file__editor{
+  height: 350px;
+  max-height: 500px;
+}
+.show{
+  display: block!important;
+}
+.hide{
+  display: none!important;
+}
+/* Light mode */
+@media (prefers-color-scheme: light) {
+  body {
+    background-color: white;
+    color: black;
+  }
+  .data-set > div:hover {
+    background-color: rgb(206, 203, 203);
+  }
+  .file_filename {
+    color: black;
+  }
+  .file__editor__model{
+    background-color:  rgb(206, 203, 203);
+  }
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #272a34;
+    color: white;
+  }
+  .data-set > div:hover {
+    background-color: #576574;
+  }
+  .file_filename {
+    color: white;
+  }
+  .file__editor__model{
+    background-color: #272a34;
+  }
+}
+
+@media (max-width: 700px) {
+  .data-set > div .left__bar a {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+    text-wrap: nowrap;
+    margin-left: -10px !important;
+  }
+}
+@media (max-width: 500px) {
+  .data-set > div .inner__container {
+    display: block !important;
+  }
+  .data-set > div .left__bar a {
+    max-width: 100px;
+  }
+  .data-set > div .right__bar {
+    font-size: 14px;
+    margin-left: 10px;
+  }
+  .data-set .file-icon {
+    width: 40px;
+  }
+  .data-set .download-icon {
+    width: 30px;
+  }
+}

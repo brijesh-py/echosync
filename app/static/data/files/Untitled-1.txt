@@ -1,0 +1,73 @@
+Your code looks generally well-structured, but there are a few improvements and suggestions:
+
+1. **Consistency in Naming:** Ensure consistency in naming conventions. For example, you have `formate_datetime` instead of `format_datetime`. Consistency helps improve code readability.
+
+2. **Reuse of Code:** The `home_page` method and the `upload_files_page` method have similar logic for handling form submission. Consider extracting the common logic into a separate method to avoid duplication.
+
+3. **Flask Flash Messages:** When flashing messages, it's a good practice to include a category along with the message. This can help in styling messages differently based on their purpose.
+
+4. **Error Handling:** It's important to handle errors gracefully. For example, in the `create_custom_file` method, if there is an error during file creation, it might be useful to log the error or provide more informative feedback.
+
+Here's a modified version incorporating these suggestions:
+
+```python
+from flask import render_template, redirect, request, flash, url_for
+from app.forms import FileUploadForm, CustomFile
+from app import app
+from app.views.create_file import FileEditor
+from app.config import compare_time
+from app.models import FilesDB
+from app.views.utils import Utils
+import os
+
+class App:
+    @app.template_global()
+    def format_datetime(date):
+        return compare_time(str(date))
+
+    def handle_form_submission(self, form, success_message, error_message):
+        if request.method == "POST" and form.validate_on_submit():
+            try:
+                # Common logic for handling form submission
+                # ...
+                flash(success_message, ["bg__success", ""])
+            except Exception as e:
+                # Log the error or provide more informative feedback
+                flash(error_message, ["bg__error", str(e)])
+        else:
+            flash("Form submission failed", ["bg__error", str(form.errors)])
+        return redirect(url_for("app.home_page"))
+
+    def home_page(self):
+        file_upload_form = FileUploadForm()
+        custom_file = CustomFile()
+        files = FilesDB.query.order_by(FilesDB.upload_time.desc()).limit(20).all()
+        return render_template(
+            "index.html",
+            form=file_upload_form,
+            custom_file=custom_file,
+            files=files,
+            compare_time=compare_time,
+        )
+
+    def create_custom_file(self):
+        custom_file = CustomFile()
+        return self.handle_form_submission(
+            custom_file,
+            "Successfully created file!",
+            "File not created?",
+        )
+
+    def save_file(self, file):
+        # ...
+
+    def upload_files_page(self):
+        file_upload_form = FileUploadForm()
+        return self.handle_form_submission(
+            file_upload_form,
+            "Successfully uploaded file!",
+            "File not uploaded?",
+        )
+```
+
+This modification promotes code reuse and improves the clarity of the code. Remember to adapt the error handling to your specific needs and logging setup.
