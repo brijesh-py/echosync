@@ -33,7 +33,7 @@ EchoSync is a simple Python file-sharing application that allows users to share 
 4. Run the application:
 
    ```bash
-   ./run.py
+   python run.py
    ```
 
 ## Usage
