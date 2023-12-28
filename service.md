@@ -1,4 +1,4 @@
-To run your file sharing app as a service on Linux, you can create a systemd service. systemd is a system and service manager for Linux, and it provides a straightforward way to manage services. Here's an example of how you can create a systemd service for your Python file sharing app.
+To run EchoSync app as a service on Linux, you can create a systemd service. systemd is a system and service manager for Linux, and it provides a straightforward way to manage services. Here's an example of how you can create a systemd service for your Python file sharing app.
 
 1. Create a new service file. Open a terminal and run:
 
