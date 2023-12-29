@@ -54,7 +54,7 @@ links %} {% block content %}
           <div class="inner__container d-flex justify-content-between w-100">
             <div class="left__bar d-flex align-items-center mx-3">
               <a
-                href="{{url_for('static',filename='./data/files/'+file.file_name)}}"
+                href="{{url_for('static',filename='./database/'+file.file_name)}}"
                 class="text-decoration-none file_filename d-block"
                 >{{file.file_name}}</a
               >
@@ -66,7 +66,7 @@ links %} {% block content %}
             </div>
           </div>
           <a
-            href="{{url_for('static',filename='./data/files/'+file.file_name)}}"
+            href="{{url_for('static',filename='./database/'+file.file_name)}}"
             download="{{file.file_name}}"
             class="text-decoration-none"
             title="Download"

@@ -3,7 +3,7 @@ from datetime import datetime
 from slugify import slugify
 import secrets
 
-UPLOAD_FILES = os.path.abspath("./app/static/data/files")
+UPLOAD_FILES = os.path.abspath("./app/static/database/")
 
 
 def compare_time(date_string):
@@ -11,15 +11,14 @@ def compare_time(date_string):
         current_date = datetime.now()
         specific_datetime = datetime.strptime(date_string, "%Y-%m-%d %H:%M")
         time_difference = current_date - specific_datetime
-
         if time_difference.days == 0:
             return specific_datetime.strftime("%H:%M")
         elif time_difference.days == 1:
             return "Yesterday"
-        elif time_difference <= 7:
+        elif time_difference.days <= 7:
             return specific_datetime.strftime("%A")
         else:
-            return specific_datetime.strftime("%d %A %Y")
+            return specific_datetime.strftime("%d %b %Y")
     except ValueError:
         return "Invalid Date"
 
@@ -28,7 +27,6 @@ def get_time():
     try:
         return str(datetime.now().strftime("%Y-%m-%d %H:%M"))
     except Exception as e:
-        print(f"Error getting time: {e}")
         return "Error"
 
 

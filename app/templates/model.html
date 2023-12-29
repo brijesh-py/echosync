@@ -16,7 +16,10 @@
         {{custom_file.csrf_token()}}
         {{custom_file.custom_filename(class="form-control", placeholder="File name", value="Untitled-1.txt")}}
         {{custom_file.custom_file_content(class="form-control file__editor d-block mt-2 ", placeholder="Write here content....")}}
-      <button class="btn btn-light mt-2 d-block" style="width:200px">Create</button>
+      <div class="d-flex mt-2 align-items-center">
+        <button class="btn btn-light d-block me-3" style="width:200px">Create</button>
+      <span class="file__editor_length text-white"></span>
+      </div>
       </form>
     </div>
   </div>
