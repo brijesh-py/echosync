@@ -46,13 +46,13 @@ To run EchoSync app as a service on Linux, you can create a systemd service. sys
 Now, your file sharing app should be running as a service. You can check the status with:
 
 ```bash
-sudo systemctl status file_sharing_app
+sudo systemctl status echosync
 ```
 
 And stop the service with:
 
 ```bash
-sudo systemctl stop file_sharing_app
+sudo systemctl stop echosync
 ```
 
 Adjust the service configuration according to your application's requirements. Ensure that the paths and permissions are set correctly, and consider adding more configuration options based on your application needs.
