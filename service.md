@@ -54,5 +54,38 @@ And stop the service with:
 ```bash
 sudo systemctl stop echosync
 ```
+If you want to use a custom host name like "echosync," you can do so, but keep in mind that this will only work if "echosync" is resolvable to an IP address on your local machine. Typically, for local development, you would use either "localhost" or "127.0.0.1" as the host, as these are common aliases for the loopback address.
+
+If you want to use a custom host name, you need to ensure that your machine can resolve it. One way to do this is by adding an entry to your system's hosts file. Here's an example for Unix-based systems (Linux, macOS):
+
+```bash
+sudo nano /etc/hosts
+```
+
+Add the following line at the end of the file:
+
+```plaintext
+127.0.0.1   echosync.com
+```
+
+Save the file and exit.
+
+Then, in your Flask application:
+
+```python
+from flask import Flask
+
+app = Flask(__name__)
+
+# Your Flask routes and configuration go here
+
+if __name__ == '__main__':
+    # Use the custom host name
+    app.run(debug=False, host='127.0.0.1', port=80)
+```
+
+Now, when you run your Flask app, it should be accessible at `http://echosync.com/` in your web browser.
+
+Keep in mind that using "localhost" or "127.0.0.1" is usually more straightforward for local development, and using custom host names might introduce complications depending on your system configuration.
 
 Adjust the service configuration according to your application's requirements. Ensure that the paths and permissions are set correctly, and consider adding more configuration options based on your application needs.
