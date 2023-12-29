@@ -1,11 +1,10 @@
-from flask import render_template, redirect, request, json, jsonify, flash, url_for
+from flask import render_template, redirect, request, flash, url_for
 from app.forms import FileUploadForm, CustomFile
 from app import app
 from app.views.create_file import FileEditor
 from app.config import compare_time
 from app.models import FilesDB
 from app.views.utils import Utils
-import os
 
 
 class App:
@@ -41,11 +40,6 @@ class App:
         else:
             return redirect(url_for("app.home_page"))
 
-    def save_file(self, file):
-        file_path = os.path.join(app.config["UPLOAD_FILES"], file.filename)
-        file.save(file_path)
-        Utils().upload_file_data(file, file_path)
-
     def upload_files_page(self):
         file_upload_form = FileUploadForm()
         if (
@@ -53,8 +47,8 @@ class App:
             and file_upload_form.validate_on_submit()
             and file_upload_form.file_input.data
         ):
-            file_data = request.files["file_input"]
-            self.save_file(file_data)
+            file_object = request.files["file_input"]
+            Utils().utils(file_object, upload_file=True)
             flash("Successfully uploaded file!", ["bg__success", ""])
         else:
             flash("File not uploaded?", ["bg__error", str(file_upload_form.errors)])

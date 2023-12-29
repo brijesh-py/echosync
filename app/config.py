@@ -37,4 +37,3 @@ def key(length=10):
 
 def create_slug(file_name):
     return slugify(file_name)
-
