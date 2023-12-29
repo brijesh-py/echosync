@@ -15,7 +15,7 @@ EchoSync is a simple Python file-sharing application that allows users to share 
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/EchoSync.git
+   git clone https://github.com/brijesh-py/EchoSync.git
    ```
 
 2. Navigate to the project directory:
