@@ -15,7 +15,6 @@
   })
 
   closeFileEditorBtn.addEventListener('click',() =>{
-    console.log(closeFileEditorBtn)
     fileEditorModel.classList.toggle('hide')
   })
 
